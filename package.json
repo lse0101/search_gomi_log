@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@elastic/elasticsearch": "^8.5.0"
+    "@elastic/elasticsearch": "^8.5.0",
+    "commander": "^9.4.1"
   }
 }
