@@ -1,34 +1,16 @@
-const {Client} = require('@elastic/elasticsearch');
+const {Command, Option} = require('commander');
 
-const search = new Client({
-  format:'json',
-  cloud: {
-    id: 'GomiMall:YXAtc291dGhlYXN0LTEuYXdzLmZvdW5kLmlvOjQ0MyQyODE4MTBjMzAzMzU0NzQ5YjMzODZkNDk3NzA5OGNiNiRlMDkyNzY5OGI5NzA0NGE4OWNkNGUwOWI1M2M4M2FhYQ==',
-  },
-  auth: {
-    username: 'elastic',
-    password: 'Efnq6BMT8xoOyEYeTjfaAksv'
-  }
-});
+const program = new Command();
 
+program
+  .addOption(new Option('-p, --profile <profile>', 'dev, stage, prod 중 하나를 선택', 'dev').choices(['dev', 'stage', 'prod']))
+  .addOption(new Option('-t, --target <target>', 'user or admin', 'user').choices(['user', 'admin']))
+  .option('-s, --start-date <sdate>', '검색 시작 일자')
+  .option('-e, --end-date <edate>', '검색 종료일자')
 
+program.parse(process.argv);
 
-const run = async () => {
-  const result = await search.sql.query({
-    query: 'SELECT request_id, message FROM "search-user-log-*" where dt > now() - INTERVAL 2 HOURS',
-    fetch_size: 1
-  });
-
-  console.log(result.rows[0][0]);
-}
-
-run().catch(console.log);
-
-
-
-
-
-
+console.log(program.opts().profile)
 
 
 
