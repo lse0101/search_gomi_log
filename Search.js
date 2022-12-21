@@ -25,12 +25,12 @@ class Search {
                        message
                 FROM "${searchOpts.index}"
                 WHERE dt BETWEEN \'${searchOpts.startDate}\' AND \'${searchOpts.endDate}\'
-                ORDER BY dt, request_id
+                ORDER BY request_id
         `,
       });
 
       if (result.rows?.length > 0) {
-        result.rows.forEach(row => console.log(row[1]));
+        result.rows.forEach(row => console.log(`[${row[0]}] ${row[1]}`));
       }
     } catch (err) {
       console.error(err);
