@@ -24,7 +24,9 @@ class Search {
         query: `SELECT request_id,
                        message
                 FROM "${searchOpts.index}"
-                WHERE dt BETWEEN \'${searchOpts.startDate}\' AND \'${searchOpts.endDate}\'
+                WHERE 
+                  env = \'${searchOpts.profile}\'
+                  AND dt BETWEEN \'${searchOpts.startDate}\' AND \'${searchOpts.endDate}\'
                 ORDER BY dt, request_id
         `,
       });
