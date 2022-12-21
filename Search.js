@@ -25,7 +25,7 @@ class Search {
                        message
                 FROM "${searchOpts.index}"
                 WHERE dt BETWEEN \'${searchOpts.startDate}\' AND \'${searchOpts.endDate}\'
-                ORDER BY request_id
+                ORDER BY dt, request_id
         `,
       });
 
@@ -38,7 +38,8 @@ class Search {
   }
 
   async search(searchOpts) {
-    await this.#doSearch(Object.assign(searchOpts, {index: 'search-user-log-*'}));
+    const index = searchOpts.target === 'user' ? 'search-user-log-*' : 'search-admin-log-*'
+    await this.#doSearch(Object.assign(searchOpts, {index}));
   }
 
 }
