@@ -15,7 +15,10 @@
   "dependencies": {
     "@elastic/elasticsearch": "^8.5.0",
     "commander": "^9.4.1",
-    "dayjs": "^1.11.7"
+    "dayjs": "^1.11.7",
+    "inquirer": "^8.2.5",
+    "undici": "^4.0.0",
+    "web-streams-polyfill": "^3.2.1"
   },
   "bin": {
     "gomi_eslog": "./main.js"
