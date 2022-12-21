@@ -48,7 +48,7 @@ const parseOptions = async () => {
 
   program
     .addOption(new Option('-p, --profile <profile>', 'dev, stage, prod 중 하나를 선택', 'dev')
-      .choices(['dev', 'stage', 'prod']))
+      .choices(['dev', 'staging', 'prod']))
     .addOption(new Option('-t, --target <target>', 'user or admin', 'user')
       .choices(['user', 'admin']))
     .requiredOption('-s, --start-date <sdate>', '검색 시작 일자')
