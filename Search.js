@@ -27,16 +27,26 @@ class Search {
                 WHERE 
                   env = \'${searchOpts.profile}\'
                   AND dt BETWEEN \'${searchOpts.startDate}\' AND \'${searchOpts.endDate}\'
-                ORDER BY dt, request_id
+                ORDER BY dt ASC, request_id
         `,
       });
 
+
       if (result.rows?.length > 0) {
-        result.rows.forEach(row => console.log(`[${row[0]}] ${row[1]}`));
+        await this.printLog(result);
       }
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async printLog(result) {
+    result.rows.forEach(row => console.log(`[${row[0]}] ${row[1]}`));
+
+    if(result.cursor)
+      await this.printLog(await this.#searchClient.sql.query({cursor: result.cursor}));
+    else
+      return;
   }
 
   async search(searchOpts) {
