@@ -3,6 +3,7 @@ const os = require('os');
 const fs = require('fs');
 const {Command, Option} = require('commander');
 const dayjs = require('dayjs');
+dayjs.extend(require('dayjs/plugin/utc'))
 const inquirer = require('inquirer');
 
 const Search = require('#root/Search');
@@ -11,6 +12,8 @@ const program = new Command();
 const dateUnit = [ 'd', 'w', 'M', 'y', 'h', 'm', 's', 'ms', ];
 const configDirRoot = `${os.homedir()}/.gomi`;
 const configFile = `${configDirRoot}/es_config`;
+const shortDateRe = /^[0-9]*(d|w|M|y|h|m|s|ms)$/;
+const yyyymmddhhmmssRe = /^[0-9]{14}$/;
 
 
 const setupConfig = async (newInit = false) => {
@@ -36,21 +39,32 @@ const setupConfig = async (newInit = false) => {
 
 }
 
+
+const validatedDate = (date) => {
+  if(shortDateRe.test(date)) {
+    return dayjs().subtract(date.slice(0,-1),date.slice(-1)) ;
+  } else if(yyyymmddhhmmssRe.test(date)) {
+    return dayjs(date, 'YYYYMMDDHHmmss');
+  } else {
+    throw new Error('date invalidate');
+  }
+}
+
+const parsedDate = ({startDate, endDate}) => {
+  return {
+    startDate : validatedDate(startDate),
+    endDate : validatedDate(endDate)
+  }
+};
+
 const validateOpts = async (programOpts) => {
-
-  if(!dateUnit.includes(programOpts.startDate.slice(-1))) {
-    throw new Error('startDate invalidate');
-  }
-
-  if(!dateUnit.includes(programOpts.endDate.slice(-1))) {
-    throw new Error('endDate invalidate');
-  }
+  const rangeDate = parsedDate(programOpts);
 
   return Object.assign({},
     programOpts,
     {
-      startDate: dayjs().subtract(programOpts.startDate.slice(0,-1),programOpts.startDate.slice(-1)).valueOf(),
-      endDate: dayjs().subtract(programOpts.endDate.slice(0,-1),programOpts.endDate.slice(-1)).valueOf(),
+      startDate: rangeDate.startDate.utc().valueOf(),
+      endDate: rangeDate.endDate.utc().valueOf(),
       msg: program.args[0]
     }
   );
