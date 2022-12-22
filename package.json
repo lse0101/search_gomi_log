@@ -21,6 +21,6 @@
     "web-streams-polyfill": "^3.2.1"
   },
   "bin": {
-    "gomi_eslog": "./main.js"
+    "gomi": "./main.js"
   }
 }
