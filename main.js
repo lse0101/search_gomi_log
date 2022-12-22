@@ -63,9 +63,11 @@ program.command('init')
   });
 program
   .command('log')
-  .addOption(new Option('-p, --profile <profile>', 'dev, stage, prod 중 하나를 선택', 'dev')
+  .addOption(new Option('-p, --profile <profile>', 'dev, stage, prod 중 하나를 선택')
+    .default('dev')
     .choices(['dev', 'alpha', 'staging', 'prod']))
-  .addOption(new Option('-t, --target <target>', 'user or admin', 'user')
+  .addOption(new Option('-t, --target <target>', 'user or admin')
+    .default('user')
     .choices(['user', 'admin']))
   .requiredOption('-s, --start-date <sdate>', '검색 시작 일자')
   .requiredOption('-e, --end-date <edate>', '검색 종료일자')
