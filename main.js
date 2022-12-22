@@ -1,11 +1,11 @@
 #!/usr/bin/env node
+const os = require('os');
+const fs = require('fs');
 const {Command, Option} = require('commander');
 const dayjs = require('dayjs');
 const inquirer = require('inquirer');
-const os = require('os');
-const fs = require('fs');
-const Search = require('#root/Search');
 
+const Search = require('#root/Search');
 
 const program = new Command();
 const dateUnit = [ 'd', 'w', 'M', 'y', 'h', 'm', 's', 'ms', ];
@@ -13,16 +13,8 @@ const configDirRoot = `${os.homedir()}/.gomi`;
 const configFile = `${configDirRoot}/es_config`;
 
 
-const main = async () => {
-  const config = await setupConfig();
-  const searchOpts = await parseOptions();
-  const search = new Search(config);
-
-  await search.search(searchOpts);
-};
-
-const setupConfig = async () => {
-  if(fs.existsSync(configFile)) {
+const setupConfig = async (newInit = false) => {
+  if(fs.existsSync(configFile) && !newInit) {
     return JSON.parse(fs.readFileSync(configFile));
   }
 
@@ -44,24 +36,7 @@ const setupConfig = async () => {
 
 }
 
-const parseOptions = async () => {
-
-  program
-    .addOption(new Option('-p, --profile <profile>', 'dev, stage, prod 중 하나를 선택', 'dev')
-      .choices(['dev', 'staging', 'prod']))
-    .addOption(new Option('-t, --target <target>', 'user or admin', 'user')
-      .choices(['user', 'admin']))
-    .requiredOption('-s, --start-date <sdate>', '검색 시작 일자')
-    .requiredOption('-e, --end-date <edate>', '검색 종료일자')
-
-  program.parse(process.argv);
-
-  if(program.args.length <= 0) {
-    console.log('검색할 문자열을 입력하지 않았습니다.');
-    return;
-  }
-
-  const programOpts = program.opts();
+const validateOpts = async (programOpts) => {
 
   if(!dateUnit.includes(programOpts.startDate.slice(-1))) {
     throw new Error('startDate invalidate');
@@ -82,4 +57,25 @@ const parseOptions = async () => {
 
 };
 
-(async ()=> await main())();
+program.command('init')
+  .action(async ()=> {
+    await setupConfig(true);
+  });
+program
+  .command('log')
+  .addOption(new Option('-p, --profile <profile>', 'dev, stage, prod 중 하나를 선택', 'dev')
+    .choices(['dev', 'alpha', 'staging', 'prod']))
+  .addOption(new Option('-t, --target <target>', 'user or admin', 'user')
+    .choices(['user', 'admin']))
+  .requiredOption('-s, --start-date <sdate>', '검색 시작 일자')
+  .requiredOption('-e, --end-date <edate>', '검색 종료일자')
+  .action(async (opts) => {
+    const config = await setupConfig();
+    const searchOpts = await validateOpts(opts);
+    const search = new Search(config);
+
+    await search.search(searchOpts);
+  });
+
+program.parse(process.argv);
+
