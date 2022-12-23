@@ -53,7 +53,7 @@ const validatedDate = (date) => {
 const parsedDate = ({startDate, endDate}) => {
   return {
     startDate : validatedDate(startDate),
-    endDate : validatedDate(endDate)
+    endDate : (endDate) ? validatedDate(endDate) : dayjs()
   }
 };
 
@@ -84,7 +84,7 @@ program
     .default('user')
     .choices(['user', 'admin']))
   .requiredOption('-s, --start-date <sdate>', '검색 시작 일자')
-  .requiredOption('-e, --end-date <edate>', '검색 종료일자')
+  .option('-e, --end-date <edate>', '검색 종료일자')
   .action(async (opts) => {
     const config = await setupConfig();
     const searchOpts = await validateOpts(opts);
