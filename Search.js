@@ -21,8 +21,10 @@ class Search {
   async #doSearch (searchOpts) {
     try {
       const result = await this.#searchClient.sql.query({
-        query: `SELECT request_id,
-                       message
+        query: `SELECT 
+                  dt, 
+                  request_id,
+                  message
                 FROM "${searchOpts.index}"
                 WHERE 
                   env = \'${searchOpts.profile}\'
@@ -41,7 +43,7 @@ class Search {
   }
 
   async printLog(result) {
-    result.rows.forEach(row => console.log(`[${row[0]}] ${row[1]}`));
+    result.rows.forEach(row => console.log(`${row[0]} [${row[1]}] ${row[2]}`));
 
     if(result.cursor)
       await this.printLog(await this.#searchClient.sql.query({cursor: result.cursor}));
