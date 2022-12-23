@@ -17,6 +17,7 @@
     "commander": "^9.4.1",
     "dayjs": "^1.11.7",
     "inquirer": "^8.2.5",
+    "search_gomi_log": "github:lse0101/search_gomi_log",
     "web-streams-polyfill": "^3.2.1"
   },
   "bin": {
