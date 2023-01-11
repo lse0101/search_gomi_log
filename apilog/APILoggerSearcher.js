@@ -1,10 +1,39 @@
 require('web-streams-polyfill')
 const {Client} = require('@elastic/elasticsearch');
 const dayjs = require("dayjs");
+const os = require("os");
+const fs = require("fs");
+const inquirer = require("inquirer");
 
 const dateUnit = [ 'd', 'w', 'M', 'y', 'h', 'm', 's', 'ms', ];
 const shortDateRe = /^[0-9]*(d|w|M|y|h|m|s|ms)$/;
 const yyyymmddhhmmssRe = /^[0-9]{14}$/;
+
+const configDirRoot = `${os.homedir()}/.gomi`;
+const configFile = `${configDirRoot}/es_config`;
+
+
+const setupConfig = async (newInit = false) => {
+  if(fs.existsSync(configFile) && !newInit) {
+    return JSON.parse(fs.readFileSync(configFile));
+  }
+
+  const result = await inquirer.prompt([
+    {type: 'input', name: 'cloudID', message:'input cloud ID'},
+    {type: 'input', name: 'username', message:'input username'},
+    {type: 'input', name: 'password', message:'input password'},
+  ]);
+
+  try {
+    if(!fs.existsSync(configDirRoot)) fs.mkdirSync(configDirRoot);
+
+    fs.writeFileSync(configFile, JSON.stringify(result));
+    return result;
+  } catch(err) {
+    console.error(err);
+    throw err;
+  }
+}
 
 /**
  * 입력된 date 옵션을 date 스트링으로 변환한다
@@ -117,4 +146,4 @@ class APILogSearcher {
 
 }
 
-module.exports = APILogSearcher;
+module.exports = {APILogSearcher, setupConfig};
