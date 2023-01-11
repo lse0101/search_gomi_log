@@ -10,7 +10,7 @@ const {APILogSearcher, setupConfig} = require('#root/apilog/APILoggerSearcher');
 
 const program = new Command();
 
-program.command('init')
+program.command('es-init')
   .action(async ()=> {
     await setupConfig(true);
   });
