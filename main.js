@@ -9,12 +9,8 @@ const inquirer = require('inquirer');
 const apiLoggerSearcher = require('#root/apilog/APILoggerSearcher');
 
 const program = new Command();
-const dateUnit = [ 'd', 'w', 'M', 'y', 'h', 'm', 's', 'ms', ];
 const configDirRoot = `${os.homedir()}/.gomi`;
 const configFile = `${configDirRoot}/es_config`;
-const shortDateRe = /^[0-9]*(d|w|M|y|h|m|s|ms)$/;
-const yyyymmddhhmmssRe = /^[0-9]{14}$/;
-
 
 const setupConfig = async (newInit = false) => {
   if(fs.existsSync(configFile) && !newInit) {
@@ -36,40 +32,7 @@ const setupConfig = async (newInit = false) => {
     console.error(err);
     throw err;
   }
-
 }
-
-
-const validatedDate = (date) => {
-  if(shortDateRe.test(date)) {
-    return dayjs().subtract(date.slice(0,-1),date.slice(-1)) ;
-  } else if(yyyymmddhhmmssRe.test(date)) {
-    return dayjs(date, 'YYYYMMDDHHmmss');
-  } else {
-    throw new Error('date invalidate');
-  }
-}
-
-const parsedDate = ({startDate, endDate}) => {
-  return {
-    startDate : validatedDate(startDate),
-    endDate : (endDate) ? validatedDate(endDate) : dayjs()
-  }
-};
-
-const validateOpts = async (programOpts) => {
-  const rangeDate = parsedDate(programOpts);
-
-  return Object.assign({},
-    programOpts,
-    {
-      startDate: rangeDate.startDate.utc().valueOf(),
-      endDate: rangeDate.endDate.utc().valueOf(),
-      msg: program.args[0]
-    }
-  );
-
-};
 
 program.command('init')
   .action(async ()=> {
@@ -88,10 +51,9 @@ program
   .option('-e, --end-date <edate>', '검색 종료일자')
   .action(async (opts) => {
     const config = await setupConfig();
-    const searchOpts = await validateOpts(opts);
     const search = new apiLoggerSearcher(config);
 
-    await search.search(searchOpts);
+    await search.search(opts);
   });
 
 program.parse(process.argv);
