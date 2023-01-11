@@ -6,7 +6,7 @@ const dayjs = require('dayjs');
 dayjs.extend(require('dayjs/plugin/utc'))
 const inquirer = require('inquirer');
 
-const Search = require('#root/Search');
+const apiLoggerSearcher = require('#root/apilog/APILoggerSearcher');
 
 const program = new Command();
 const dateUnit = [ 'd', 'w', 'M', 'y', 'h', 'm', 's', 'ms', ];
@@ -75,6 +75,7 @@ program.command('init')
   .action(async ()=> {
     await setupConfig(true);
   });
+
 program
   .command('log')
   .addOption(new Option('-p, --profile <profile>', 'dev, stage, prod 중 하나를 선택')
@@ -88,7 +89,7 @@ program
   .action(async (opts) => {
     const config = await setupConfig();
     const searchOpts = await validateOpts(opts);
-    const search = new Search(config);
+    const search = new apiLoggerSearcher(config);
 
     await search.search(searchOpts);
   });

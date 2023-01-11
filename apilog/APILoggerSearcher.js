@@ -1,7 +1,7 @@
 require('web-streams-polyfill')
 const {Client} = require('@elastic/elasticsearch');
 
-class Search {
+class APILogSearcher {
 
   #searchClient
 
@@ -58,4 +58,4 @@ class Search {
 
 }
 
-module.exports = Search;
+module.exports = APILogSearcher;
