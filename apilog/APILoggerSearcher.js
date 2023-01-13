@@ -5,6 +5,8 @@ const os = require("os");
 const fs = require("fs");
 const inquirer = require("inquirer");
 
+dayjs.extend(require('dayjs/plugin/utc'))
+
 const dateUnit = [ 'd', 'w', 'M', 'y', 'h', 'm', 's', 'ms', ];
 const shortDateRe = /^[0-9]*(d|w|M|y|h|m|s|ms)$/;
 const yyyymmddhhmmssRe = /^[0-9]{14}$/;

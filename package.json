@@ -23,5 +23,8 @@
   },
   "bin": {
     "gomi": "./main.js"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.18"
   }
 }

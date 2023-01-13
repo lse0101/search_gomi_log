@@ -2,11 +2,10 @@
 const os = require('os');
 const fs = require('fs');
 const {Command, Option} = require('commander');
-const dayjs = require('dayjs');
-dayjs.extend(require('dayjs/plugin/utc'))
 const inquirer = require('inquirer');
 
 const {APILogSearcher, setupConfig} = require('#root/apilog/APILoggerSearcher');
+const sqsLogger = require('#root/sqs/SQSLogger');
 
 const program = new Command();
 
@@ -30,6 +29,33 @@ program
     const search = new APILogSearcher(config);
 
     await search.search(opts);
+  });
+
+const logStreamListAction = async (nextToken) => {
+  const lists = await sqsLogger.listLogStreams(nextToken);
+  const choices = lists.logStreams.map(l => `${l.storedBytes} [${l.dt}]| ${l.logStreamName}`);
+
+  if(lists.nextToken) choices.push('next...');
+
+  inquirer.prompt([
+    {type: 'list',
+      name: 'name',
+      message: 'select logStream',
+      choices
+    }
+  ]).then(async ans => {
+    if(ans.name === 'next...') {
+      await logStreamListAction(lists.nextToken);
+    } else {
+      await sqsLogger.printLog(ans.name.split('|')[1].trim());
+    }
+  });
+};
+
+program
+  .command('qlog')
+  .action(async () => {
+    return await logStreamListAction();
   });
 
 program.parse(process.argv);
