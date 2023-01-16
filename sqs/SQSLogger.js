@@ -12,7 +12,7 @@ class SQSLogger {
   }
 
   async listLogStreams(name) {
-    return await this.cwClient.describeLogStreams({limit: 10, descending:true, logGroupName, logStreamNamePrefix:name})
+    return await this.cwClient.describeLogStreams({limit: 50, descending:true, logGroupName, logStreamNamePrefix:name})
       .promise()
       .then(log => {
         return {
