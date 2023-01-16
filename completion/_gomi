@@ -1,0 +1,12 @@
+function _gomi() {
+  local state
+  _arguments '1: :(log qlog)' '2: :->stream'
+
+  case $state in
+    stream)
+      compadd $(gomi search-qlog $1)
+    ;;
+  esac
+}
+
+compdef _gomi gomi
