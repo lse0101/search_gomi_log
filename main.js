@@ -31,32 +31,30 @@ program
     await search.search(opts);
   });
 
-const logStreamListAction = async (nextToken) => {
-  const lists = await sqsLogger.listLogStreams(nextToken);
-  const choices = lists.logStreams.map(l => `${l.storedBytes} [${l.dt}]| ${l.logStreamName}`);
+const logStreamListAction = async (name) => {
+  const lists = await sqsLogger.listLogStreams(name);
+  const choices = lists.logStreams.map(l => `${l.dt}|${l.logStreamName}`);
 
-  if(lists.nextToken) choices.push('next...');
-
-  inquirer.prompt([
-    {type: 'list',
-      name: 'name',
-      message: 'select logStream',
-      choices
-    }
-  ]).then(async ans => {
-    if(ans.name === 'next...') {
-      await logStreamListAction(lists.nextToken);
-    } else {
-      await sqsLogger.printLog(ans.name.split('|')[1].trim());
-    }
-  });
+  choices.forEach(c=> console.log(c));
 };
+
+program
+  .command('search-qlog')
+  .action(async () => {
+    await logStreamListAction(process.argv[3]);
+  });
 
 program
   .command('qlog')
   .action(async () => {
-    return await logStreamListAction();
+    const streamName = process.argv[3];
+    if(!streamName || streamName.trim() === '') {
+      console.error('logStreamName을 입력해주세요');
+    } else {
+      await sqsLogger.printLog(process.argv[3].split('|')[1]);
+    }
   });
+
 
 program.parse(process.argv);
 

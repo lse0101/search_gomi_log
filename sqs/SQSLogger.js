@@ -11,14 +11,14 @@ class SQSLogger {
     this.cwClient = new watchClient({region});
   }
 
-  async listLogStreams(nextToken) {
-    return await this.cwClient.describeLogStreams({limit: 10, descending:true, logGroupName, nextToken})
+  async listLogStreams(name) {
+    return await this.cwClient.describeLogStreams({limit: 10, descending:true, logGroupName, logStreamNamePrefix:name})
       .promise()
       .then(log => {
         return {
           logStreams : log.logStreams.map(l => {
             return {
-              dt: dayjs(l.firstEventTimestamp).utc().format('YYYY-MM-DD HH-mm-ss'),
+              dt: dayjs(l.firstEventTimestamp).utc().format('YYYY-MM-DD_HH:mm:ss'),
               storedBytes : l.storedBytes,
               logStreamName : l.logStreamName
             }
@@ -29,7 +29,6 @@ class SQSLogger {
   }
 
   async printLog(logStreamName, nextToken) {
-    console.log(`|${logStreamName}|`)
     const listEvents = await this.cwClient.getLogEvents({logGroupName, logStreamName, startFromHead: true, nextToken }).promise();
 
     listEvents.events.forEach(e => console.log(e.message));
