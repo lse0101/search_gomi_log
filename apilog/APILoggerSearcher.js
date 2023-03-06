@@ -142,7 +142,26 @@ class APILogSearcher {
 
   async search(opts) {
     const searchOpts = await validateOpts(opts);
-    const index = searchOpts.target === 'user' ? 'search-user-log-*' : 'search-admin-log-*'
+    let index;
+
+    if(searchOpts.target === 'user') {
+      index = 'search-user-log-*';
+    } else if(searchOpts.target === 'admin') {
+      index = 'search-admin-log-*';
+    } else {
+      let prefix;
+
+      if(searchOpts.profile === 'dev') {
+        prefix = 'develop';
+      } else if(searchOpts.profile === 'staging') {
+        prefix = 'staging';
+      } else {
+        prefix = 'production';
+      }
+
+      searchOpts.profile = prefix;
+      index = `${prefix}-search-engine-log-*`;
+    }
     await this.#doSearch(Object.assign(searchOpts, {index}));
   }
 
