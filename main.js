@@ -21,7 +21,7 @@ program
     .choices(['dev', 'alpha', 'staging', 'prod']))
   .addOption(new Option('-t, --target <target>', 'user or admin')
     .default('user')
-    .choices(['user', 'admin', 'search']))
+    .choices(['user', 'admin', 'batch', 'search']))
   .requiredOption('-s, --start-date <sdate>', '검색 시작 일자')
   .option('-e, --end-date <edate>', '검색 종료일자')
   .action(async (opts) => {

@@ -112,13 +112,12 @@ class APILogSearcher {
       const result = await this.#searchClient.sql.query({
         query: `SELECT 
                   dt, 
-                  request_id,
-                  message
+                  ${searchOpts.target === 'batch' ? 'message' : 'request_id, message' }
                 FROM "${searchOpts.index}"
                 WHERE 
                   env = \'${searchOpts.profile}\'
                   AND dt BETWEEN \'${searchOpts.startDate}\' AND \'${searchOpts.endDate}\'
-                ORDER BY dt ASC, request_id
+                ORDER BY dt ASC
         `,
       });
 
@@ -156,6 +155,8 @@ class APILogSearcher {
       index = 'search-user-log-*';
     } else if(searchOpts.target === 'admin') {
       index = 'search-admin-log-*';
+    } else if(searchOpts.target === 'batch')  {
+      index = 'search-batch-log-*';
     } else {
       let prefix;
 
