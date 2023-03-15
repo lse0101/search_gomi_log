@@ -132,12 +132,20 @@ class APILogSearcher {
   }
 
   async printLog(result) {
-    result.rows.forEach(row => console.log(`${row[0]} [${row[1]}] ${row[2]}`));
+    let ret;
 
-    if(result.cursor)
-      await this.printLog(await this.#searchClient.sql.query({cursor: result.cursor}));
-    else
-      return;
+    const print = async (log) => {
+      log.rows.forEach(row => console.log(`${row[0]} [${row[1]}] ${row[2]}`));
+      return log;
+    };
+
+    ret = await print(result);
+
+    while(true) {
+      if(!ret.cursor) break;
+      ret = await print(await this.#searchClient.sql.query({cursor: ret.cursor}));
+    }
+
   }
 
   async search(opts) {
